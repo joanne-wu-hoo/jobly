@@ -51,7 +51,7 @@ class Company {
         let company = result.rows[0];
 
         if (!company){
-            throw new ExpressErorr(`Company with handle: ${handle} not found`, 404);
+            throw new ExpressError(`Company with handle: ${handle} not found`, 404);
         }
 
         return company;
@@ -112,8 +112,8 @@ class Company {
      */
     static async query(queriesObj){
         let search = queriesObj.search;
-        let minEmployees = queriesObj.minEmployees;
-        let maxEmployees = queriesObj.maxEmployees;
+        let minEmployees = queriesObj.min_employees;
+        let maxEmployees = queriesObj.max_employees;
 
         if (minEmployees > maxEmployees) {
             // console.log("min employees > max employees");

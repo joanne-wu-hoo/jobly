@@ -11,4 +11,9 @@ CREATE TABLE companies (
 );
 
 INSERT INTO companies
-    VALUES ('test', 'test', 112358, 'test', 'test.html')
+    VALUES ('test', 'test', 112358, 'test', 'test.html'),
+        ('google', 'Google', 1, 'test', 'test.html'),
+     ('amazon', 'Amazon', 12, 'test', 'test.html'),
+     ('apple', 'Apple', 123, 'test', 'test.html'),
+     ('altoids', 'Altoids', 500, 'lots of altoids', 'test.html');
+
