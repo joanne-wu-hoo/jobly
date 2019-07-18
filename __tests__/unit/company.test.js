@@ -2,6 +2,7 @@ const Company = require("../../models/company");
 const db = require("../../db");
 const ExpressError = require("../../helpers/expressError");
 
+
 describe("Company model tests", () => {
     beforeEach(async function () {
         await db.query("DELETE FROM companies");
@@ -79,7 +80,7 @@ describe("Company model tests", () => {
             });
 
             it("should retun filtered results based on minEmployees", async function() {
-                expect(await Company.query({minEmployees: 100})).toEqual([{
+                expect(await Company.query({min_employees: 100})).toEqual([{
                     handle: "test-company",
                     name: "Test Company",
                     num_employees: 12345,
@@ -89,7 +90,7 @@ describe("Company model tests", () => {
             });
 
             it("should retun filtered results based on maxEmployees", async function() {
-                expect(await Company.query({maxEmployees: 2})).toEqual([{
+                expect(await Company.query({max_employees: 2})).toEqual([{
                     handle: "company-test",
                     name: "Company Test",
                     num_employees: 1,
@@ -99,7 +100,7 @@ describe("Company model tests", () => {
             });
 
             it("should return filtered results based on multiple criteria", async function() {
-                expect(await Company.query({search:"test-company", minEmployees: 2, maxEmployees: 100})).toEqual([{
+                expect(await Company.query({search:"test-company", min_employees: 2, max_employees: 100})).toEqual([{
                     handle: "test-company2",
                     name: "Test Company2",
                     num_employees: 12,
@@ -109,7 +110,7 @@ describe("Company model tests", () => {
             });            
 
             it("should throw error if minEmployees is greater than max employees", async function() {
-                expect(Company.query({minEmployees: 100, maxEmployees: 2})).rejects.toThrowError(ExpressError);
+                expect(Company.query({min_employees: 100, max_employees: 2})).rejects.toThrowError(ExpressError);
             });
         })
 
