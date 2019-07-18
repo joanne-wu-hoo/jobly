@@ -4,6 +4,27 @@ const sqlForPartialUpdate = require("../helpers/partialUpdate");
 
 class Company {
 
+  /** given a company handle, return info about jobs that belong to that company
+   * [{jobData, jobData, ...}] where jobData is of form 
+   * { id, title, salary, equity, company_handle, date_posted }
+   */
+  static async getCompanyJobs(handle){
+    const results = await db.query(
+      `SELECT id,
+        title,
+        salary,
+        equity,
+        company_handle,
+        date_posted 
+      FROM jobs 
+      WHERE company_handle = $1
+      ORDER BY date_posted DESC`, 
+      [handle]
+    );
+
+    return results.rows;
+  }
+
   /** register new company 
    * - return {handle, name, num_employees, description, logo_url}
    * - or throw a 400 error

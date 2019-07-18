@@ -47,13 +47,13 @@ router.post("/", async function(req, res, next) {
 });
 
 /** GET /companies/[handle] 
- * - return JSON for requested company: {company: companyData}
+ * - return JSON for requested company: {company: {...companyData, jobs: [job, ...]}}
  * - or throws 404
  */
-
 router.get("/:handle", async function(req, res, next) {
     try {
         company = await Company.get(req.params.handle);
+        company.jobs = await Company.getCompanyJobs(req.params.handle)
         return res.json({company})
     } catch(err) {
         return next(err)  

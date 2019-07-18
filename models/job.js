@@ -11,7 +11,7 @@ class Job {
    *  NOTE: used in POST/jobs
    */
   static async create({ title, salary, equity, company_handle }) {
-
+      console.log(title)
       const result = await db.query(
           `INSERT INTO jobs (
                   title,

@@ -3,9 +3,9 @@ const app = require("../../app");
 const db = require("../../db");
 const request = require("supertest");
 
-describe("Company model tests", () => {
-  beforeEach(async function () {
-    // console.log("before each")
+let c1;
+describe("Company routes tests", function() {
+  beforeEach(async function() {
     await db.query("DELETE FROM companies");
 
     c1 = await Company.create({
@@ -18,7 +18,7 @@ describe("Company model tests", () => {
 
   });
 
-  afterEach(async function () {
+  afterEach(async function() {
     await db.query("DELETE FROM companies");
   });
 
@@ -26,7 +26,7 @@ describe("Company model tests", () => {
    * where companyData looks like: {handle, name, num_employees, description, logo_url}
    */
   describe("GET /companies", function () {
-    test("returns info for all companies", async function () {
+    it("returns info for all companies", async function () {
       let response = await request(app)
         .get("/companies");
 
@@ -42,7 +42,7 @@ describe("Company model tests", () => {
       });
     });
 
-    test("throws error if min_employees < max_employees", async function () {
+    it("throws error if min_employees < max_employees", async function () {
   
       let response = await request(app)
         .get("/companies?min_employees=100&max_employees=1");
@@ -54,7 +54,7 @@ describe("Company model tests", () => {
 
   /** POST/companies => {company: {handle, name, num_employees, description, logo_url}} */
   describe("POST /companies", function () {
-    test("adds company", async function () {
+    it("adds company", async function () {
       let newCompanyInfo = {
         handle: "test-add-company",
         name: "Test Add Company",
@@ -72,7 +72,7 @@ describe("Company model tests", () => {
       });
     });
 
-    test("throws error if user provides malformed data", async function () {
+    it("throws error if user provides malformed data", async function () {
       let malformedCompanyInfo = {
           wrong: "test-add-company",
           name: "Test Add Company",
@@ -88,7 +88,7 @@ describe("Company model tests", () => {
     
       });
 
-    test("throws error if user tries to create a duplicate entry", async function () {
+    it("throws error if user tries to create a duplicate entry", async function () {
       let duplicateCompany = {
         handle: "test-company",
         name: "Test Company",
@@ -107,7 +107,7 @@ describe("Company model tests", () => {
 
   /** GET/companies/[handle] =>  {company: {handle, name, num_employees, description, logo_url}} */
   describe("GET/companies/[handle]", function () {
-    test("returns requested company info", async function () {
+    it("returns requested company info", async function () {
       let response = await request(app)
           .get("/companies/test-company");
 
@@ -116,7 +116,7 @@ describe("Company model tests", () => {
       });
     });
 
-    test("throws error if user is requesting info for a company that does not exist", async function () {
+    it("throws error if user is requesting info for a company that does not exist", async function () {
       
       let response = await request(app)
         .get("/companies/wrong-company");
@@ -128,7 +128,7 @@ describe("Company model tests", () => {
 
   /** PATCH/companies/[handle] =>  {company: {handle, name, num_employees, description, logo_url}} */
   describe("PATCH/companies/[handle]", function () {
-    test("updates company info", async function () {
+    it("updates company info", async function () {
       let updatedCompanyInfo = {
           name: "Test updated Company",
           num_employees: 54321,
@@ -147,7 +147,7 @@ describe("Company model tests", () => {
       });
     });
 
-    test("throws error if user provides malformed data (extra fields)", async function () {
+    it("throws error if user provides malformed data (extra fields)", async function () {
       let wrongUpdatedCompanyInfo = {
           wrong: "wrong field"
       }
@@ -160,7 +160,7 @@ describe("Company model tests", () => {
      
     });
 
-    test("throws error if user is trying to update a company that does not exist in the database", async function () {
+    it("throws error if user is trying to update a company that does not exist in the database", async function () {
       let updatedCompanyInfo = {
         name: "Test updated Company",
         num_employees: 54321,
@@ -179,7 +179,7 @@ describe("Company model tests", () => {
 
   /** DELETE/companies/[handle] =>  { message: "Company deleted" } */
   describe("DELETE/companies/[handle]", function () {
-    test("deletes company info", async function () {
+    it("deletes company info", async function () {
       let response = await request(app)
           .delete("/companies/test-company")
 
@@ -188,7 +188,7 @@ describe("Company model tests", () => {
       });
     });
 
-    test("throws error if user is trying to delete a company that does not exist in the database", async function () {
+    it("throws error if user is trying to delete a company that does not exist in the database", async function () {
       let response = await request(app)
         .delete("/companies/wrong-company")
       expect(response.body.status).toEqual(404)
