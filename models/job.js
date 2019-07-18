@@ -1,43 +1,35 @@
 const db = require("../db");
 const ExpressError = require("../helpers/expressError");
 const sqlForPartialUpdate = require("../helpers/partialUpdate");
+const sqlForJobQuery = require("../helpers/jobQuery");
 
-// NOTE: jobData is of form { title, salary, equity, company_handle, date_posted }
+// NOTE: jobData is of form { id, title, salary, equity, company_handle, date_posted }
 
 class Job {
-  // create, update, get, query, delete
-
   /** register new job 
-   * - return {job: jobData }
-   * - or throw a 400 error if user is trying to create a duplicate job 
+   * - return { id, title, salary, equity, company_handle, date_posted } 
    *  NOTE: used in POST/jobs
    */
-  static async create() {
-      // const companyExist = await db.query("SELECT handle FROM companies WHERE handle=$1", [handle])
+  static async create({ title, salary, equity, company_handle }) {
 
-      // if(companyExist.rows.length > 0){
-      //     throw new ExpressError(`Company ${handle} already exists`, 400)
-      // }
-      
-      // const result = await db.query(
-      //     `INSERT INTO companies (
-      //             handle,
-      //             name,
-      //             num_employees,
-      //             description,
-      //             logo_url)
-      //         VALUES ($1, $2, $3, $4, $5)
-      //         RETURNING handle, name, num_employees, description, logo_url`,
-      //     [handle, name, num_employees, description, logo_url]);
-                  
-      // return result.rows[0];
+      const result = await db.query(
+          `INSERT INTO jobs (
+                  title,
+                  salary,
+                  equity,
+                  company_handle)
+              VALUES ($1, $2, $3, $4)
+              RETURNING id, title, salary, equity, company_handle, date_posted`,
+          [title, salary, equity, company_handle]);
+                   
+      return result.rows[0];
   }
 
   /** given:
    * - items: an object with keys of data table columns and values of updated values 
    * - id: a job's id
    * return:
-   * - { title, salary, equity, company_handle, date_posted }
+   * - { id, title, salary, equity, company_handle, date_posted }
    * - or throw a 404 error
    * 
    * NOTE: Used in PATCH/job/:id
@@ -53,42 +45,73 @@ class Job {
         throw new ExpressError(`Job with id: ${id} not found`, 404);
     }
     return {
-        // handle: company.handle,
-        // name: company.name,
-        // num_employees: company.num_employees,            
-        // description: company.description,
-        // logo_url: company.logo_url, 
+      id: job.id,
+      title: job.title,
+      salary: job.salary,
+      equity: job.equity,
+      company_handle: job.company_handle,
+      date_posted: job.date_posted
     };
   }
 
+  /** given req.query (an object with  key/value pairs search term, min_salary, and min_equity)
+   * query database and return [jobData, jobData...] 
+   * where jobData = { id, title, salary, equity, company_handle, date_posted }
+   * 
+   * NOTE: Used in GET/jobs, query string parameters search, min_salary, min_equity
+   */
+
+  static async query(queryObj) {
+    let {finalQuery, values} = sqlForJobQuery(queryObj);
+
+    let result = await db.query(finalQuery, values);
+    return result.rows;
+  }
+
   /** given a job id, 
-   * - return { title, salary, equity, company_handle, date_posted }
+   * - return { id, title, salary, equity, company_handle, date_posted }
    * - or throw a 404 error
    * NOTE: Used in GET/jobs
    */
   static async get(id) {
-    // const result = await db.query(
-    //   `SELECT handle,
-    //             name,
-    //             num_employees,
-    //             description,
-    //             logo_url
-    //         FROM companies
-    //         WHERE handle = $1`,
-    //   [handle]
-    // )
+    const result = await db.query(
+      `SELECT id,
+              title,
+              salary,
+              equity,
+              company_handle,
+              date_posted
+            FROM jobs
+            WHERE id = $1`,
+      [id]
+    )
 
-    // let company = result.rows[0];
+    let job = result.rows[0];
 
-    // if (!company) {
-    //   throw new ExpressError(`Company with handle: ${handle} not found`, 404);
-    // }
+    if (!job) {
+      throw new ExpressError(`Job with id: ${id} not found`, 404);
+    }
 
-    // return company;
+    return job;
   }    
+
+  /** given a job id, delete job from database, and return deletion confirmation message
+   * NOTE: Used in DELETE/jobs/:id
+   */
+  static async delete(id) {
+    const result = await db.query(
+      `DELETE FROM jobs
+               WHERE id = $1 
+               RETURNING id`,
+      [id]);
+
+    if (result.rows.length === 0) {
+      throw new ExpressError(`Job with id: ${id} not found`, 404);
+    }
+  }
 
 }
 
   
   
-module.exports = Company
+module.exports = Job

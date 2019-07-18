@@ -98,10 +98,6 @@ class Company {
     if (result.rows.length === 0) {
       throw new ExpressError(`Company with handle: ${handle} not found`, 404);
     }
-
-    // return result.rows[0];
-    // prob dont need to return bc in route we will check for error and handle approriatley 
-    // return "Company deleted"
   }
 
   /** given req.query (an object with  key/value pairs search term, minEmployees, and maxEmployees)
@@ -118,8 +114,6 @@ class Company {
       // console.log("min employees > max employees");
       throw new ExpressError("Bad request, min_employees should be less than max_employees", 400);
     }
-
-    let finalQuery;
 
     let baseQuery =
       `SELECT handle, 
@@ -152,15 +146,12 @@ class Company {
       idx++;
     }
 
-    if (whereClause.length === 0) {
-      // if there are no additional clauses, then base query is final query
-      finalQuery = baseQuery;
-    } else {
-      finalQuery = baseQuery + " WHERE " + whereClause.join(" AND ");
-    }
+    let finalQuery = (whereClause.length === 0)
+      ? baseQuery
+      : baseQuery + " WHERE " + whereClause.join(" AND "); 
 
-    let result = await db.query(finalQuery, values)
-    return result.rows
+    let result = await db.query(finalQuery, values);
+    return result.rows;
   }
 
 }

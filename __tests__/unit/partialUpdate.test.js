@@ -1,6 +1,8 @@
+/** Unit test for sqlForPartialUpdate */
+
 const sqlForPartialUpdate = require("../../helpers/partialUpdate")
 
-describe("partialUpdate()", () => {
+describe("partialUpdate()", function() {
   it("should generate a proper partial update query with just 1 field", function () {
     let table = "users";
     let items = {
