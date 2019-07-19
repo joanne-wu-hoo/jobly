@@ -1,40 +1,22 @@
 const Job = require("../../models/job");
-const Company = require("../../models/company");
 const db = require("../../db");
+const { g, beforeEachSeedData, afterEachTearDownData } = require("../../helpers/seedTestData")
 
-let j1;
+
 
 describe("Job model tests", function() {
   beforeEach(async function() {
-    await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
-
-    c1 = await Company.create({
-      handle: "test-company",
-      name: "Test Company",
-      num_employees: 12345,
-      description: "test company",
-      logo_url: "test-company.jpg"
-    });
-
-    j1 = await Job.create({
-      title: "test-job",
-      salary: 100,
-      equity: .5,
-      company_handle: "test-company"
-    });
-
+    await beforeEachSeedData();
   });
 
   afterEach(async function() {
-    await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
+    await afterEachTearDownData();
   });
 
   // Get tests
   describe("Get a job", function() {
     it("should return requested job's info", async function () {
-      expect(await Job.get(j1.id)).toEqual(j1);
+      expect(await Job.get(g.j1.id)).toEqual(g.j1);
     });
 
     it("should error when requesting information for a non-existant job", async function () {
@@ -51,24 +33,24 @@ describe("Job model tests", function() {
   // Query tests
   describe("Get a job based on query paramaters", function () {
     it("should return jobs from database", async function () {
-      expect((await Job.query({})).length).toEqual(1)
+      expect((await Job.query({})).length).toEqual(2)
     });
   });
 
   // Update tests
   describe("Update a job", () => {
     it("should update a job", async function() {
-      let id= j1.id
+      let id= g.j1.id
       let items = { 
           salary: 1000000,
           equity: .75
       }
       expect(await Job.update(items, id)).toEqual({
-        id: j1.id,
+        id: g.j1.id,
         title: "test-job",
         salary: 1000000,
         equity: .75,
-        date_posted: j1.date_posted,
+        date_posted: g.j1.date_posted,
         company_handle: "test-company"
       });
     });
@@ -112,7 +94,7 @@ describe("Job model tests", function() {
   // Delete tests
   describe("Delete a job", function() {
     it("should not error when deleting a real job", async function() {
-      expect(await Job.delete(j1.id)).toEqual(undefined);
+      expect(await Job.delete(g.j1.id)).toEqual(undefined);
     });
 
     it("should error when deleting a non-existant job", async function(){

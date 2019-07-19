@@ -1,25 +1,16 @@
-const Company = require("../../models/company");
 const app = require("../../app");
 const db = require("../../db");
 const request = require("supertest");
+const { g, beforeEachSeedData, afterEachTearDownData, cleanDate } = require("../../helpers/seedTestData")
 
-let c1;
+
 describe("Company routes tests", function() {
   beforeEach(async function() {
-    await db.query("DELETE FROM companies");
-
-    c1 = await Company.create({
-      handle: "test-company",
-      name: "Test Company",
-      num_employees: 12345,
-      description: "test",
-      logo_url: "test.jpg"
-    });
-
+    await beforeEachSeedData();
   });
 
   afterEach(async function() {
-    await db.query("DELETE FROM companies");
+    await afterEachTearDownData();
   });
 
   /** GET/companies => {companies: [companyData, ...]} 
@@ -36,6 +27,18 @@ describe("Company routes tests", function() {
             handle: "test-company",
             name: "Test Company",
             num_employees: 12345,
+            description: "test",
+            logo_url: "test.jpg"
+          }, {
+            handle: "company-test",
+            name: "Company Test",
+            num_employees: 1,
+            description: "test",
+            logo_url: "test.jpg"
+          }, {
+            handle: "test-company2",
+            name: "Test Company2",
+            num_employees: 12,
             description: "test",
             logo_url: "test.jpg"
           }]
@@ -105,14 +108,20 @@ describe("Company routes tests", function() {
     });
   });
 
-  /** GET/companies/[handle] =>  {company: {handle, name, num_employees, description, logo_url}} */
+  /** GET/companies/[handle] =>  {company: {...companyData, jobs: [job, ...]}} */
   describe("GET/companies/[handle]", function() {
     it("returns requested company info", async function() {
       let response = await request(app)
         .get("/companies/test-company");
 
       expect(response.body).toEqual({
-        company: c1
+        company: {
+          ...g.c1,
+          jobs: [
+            cleanDate(g.j1),
+            cleanDate(g.j2)
+          ]
+        }
       });
     });
 

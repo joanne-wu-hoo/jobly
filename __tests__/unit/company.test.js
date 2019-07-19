@@ -1,39 +1,17 @@
 const Company = require("../../models/company");
 const db = require("../../db");
-const ExpressError = require("../../helpers/expressError");
+const { g, beforeEachSeedData, afterEachTearDownData } = require("../../helpers/seedTestData")
+
 
 
 describe("Company model tests", function() {
   beforeEach(async function() {
-    await db.query("DELETE FROM companies");
+    await beforeEachSeedData();
 
-    let c1 = await Company.create({
-      handle: "test-company",
-      name: "Test Company",
-      num_employees: 12345,
-      description: "test",
-      logo_url: "test.jpg"
-    });
-
-    let c2 = await Company.create({
-      handle: "company-test",
-      name: "Company Test",
-      num_employees: 1,
-      description: "test",
-      logo_url: "test.jpg"
-    });
-
-    let c3 = await Company.create({
-      handle: "test-company2",
-      name: "Test Company2",
-      num_employees: 12,
-      description: "test",
-      logo_url: "test.jpg"
-    })
   });
 
   afterEach(async function() {
-    await db.query("DELETE FROM companies");
+    await afterEachTearDownData();
   });
 
   describe("Company CRUD methods", function() {
@@ -108,7 +86,7 @@ describe("Company model tests", function() {
       });
 
       it("should throw error if minEmployees is greater than max employees", async function () {
-        expect(Company.query({ min_employees: 100, max_employees: 2 })).rejects.toThrowError(ExpressError);
+        expect(Company.query({ min_employees: 100, max_employees: 2 })).rejects.toThrow();
       });
     })
 
@@ -188,6 +166,30 @@ describe("Company model tests", function() {
         }
       });
     });
+
+    // getJobByCompanyHandle tests
+    describe("Get jobs by company handle tests", function() {
+      it("should return an array of information for the company's jobs, with most recent posting first", async function() {
+        expect(await Company.getCompanyJobs("test-company")).toEqual([
+          {
+            id: g.j1.id,
+            title: "test-job",
+            salary: 100,
+            equity: .5,
+            company_handle: "test-company",
+            date_posted: g.j1.date_posted
+          },
+          {
+            id: g.j2.id,
+            title: "test-job2",
+            salary: 200,
+            equity: .75,
+            company_handle: "test-company",
+            date_posted: g.j2.date_posted
+          }
+        ]);
+      });
+    });      
   });
 
   afterAll(async function () {

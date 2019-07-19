@@ -1,40 +1,17 @@
-const Company = require("../../models/company");
-const Job = require("../../models/job");
 const app = require("../../app");
 const db = require("../../db");
 const request = require("supertest");
+const { g, beforeEachSeedData, afterEachTearDownData, cleanDate } = require("../../helpers/seedTestData")
 
-let c1;
-let j1;
 
-function cleanDate(date) {
-  return JSON.parse(JSON.stringify(date))
-}
 
 describe("Job routes tests", function() {
   beforeEach(async function() {
-    await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
-
-    c1 = await Company.create({
-      handle: "test-company",
-      name: "Test Company",
-      num_employees: 12345,
-      description: "test",
-      logo_url: "test.jpg"
-    });
-    
-    j1 = await Job.create({
-      title: "test-job",
-      salary: 100,
-      equity: .5,
-      company_handle: "test-company"
-    });
+    await beforeEachSeedData();
   });
 
   afterEach(async function() {
-    await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
+    await afterEachTearDownData();
   });
 
   /** GET/jobs => {jobs: [jobData, ...]} 
@@ -48,12 +25,19 @@ describe("Job routes tests", function() {
       expect(response.body).toEqual({
         jobs:
           [{
-            id: j1.id,
+            id: g.j1.id,
             title: "test-job",
             salary: 100,
             equity: .5,
             company_handle: "test-company",
-            date_posted: cleanDate(j1.date_posted)
+            date_posted: cleanDate(g.j1.date_posted)
+          }, {
+            id: g.j2.id,
+            title: "test-job2",
+            salary: 200,
+            equity: .75,
+            company_handle: "test-company",
+            date_posted: cleanDate(g.j2.date_posted)            
           }]
       });
     });
@@ -92,6 +76,77 @@ describe("Job routes tests", function() {
         .send(malformedJobInfo);
       expect(response.body.status).toEqual(400)
     
+    });
+  });
+
+  /** PATCH/jobs/[id] => {job: { id, title, salary, equity, company_handle, date_posted }} */
+  describe("PATCH/jobs/[id]", function() {
+    it("updates job info", async function() {
+      let updatedJobInfo = {
+        title: "test-updated-job",
+        salary: 10,
+        equity: .25,
+        company_handle: "test-company"
+      }
+
+      let response = await request(app)
+        .patch(`/jobs/${g.j1.id}`)
+        .send(updatedJobInfo);
+
+      expect(response.body).toEqual({
+        job: {
+          id: g.j1.id,
+          date_posted: cleanDate(g.j1.date_posted),
+          ...updatedJobInfo
+        }
+      });
+    });
+
+    it("throws error if user provides malformed data (extra fields)", async function() {
+      let wrongUpdatedjobInfo = {
+        wrong: "wrong field"
+      }
+
+      let response = await request(app)
+        .patch(`/jobs/${g.j1.id}`)
+        .send(wrongUpdatedjobInfo);
+      expect(response.body.status).toEqual(400)
+
+    });
+
+    it("throws error if user is trying to update a job that does not exist in the database", async function() {
+      let updatedjobInfo = {
+        title: "test-updated-job",
+        salary: 10,
+        equity: .25,
+        company_handle: "test-company"
+      }
+
+      let response = await request(app)
+        .patch("/jobs/0")
+        .send(updatedjobInfo);
+      expect(response.body.status).toEqual(404)
+      expect(response.body.message).toEqual("Job with id: 0 not found")
+
+    });
+  });
+
+   /** DELETE/jobs/[id] =>  { message: "Job deleted" } */
+   describe("DELETE/jobs/[id]", function() {
+    it("deletes job info", async function() {
+      let response = await request(app)
+        .delete(`/jobs/${g.j1.id}`)
+
+      expect(response.body).toEqual({
+        message: "Job deleted"
+      });
+    });
+
+    it("throws error if user is trying to delete a job that does not exist in the database", async function() {
+      let response = await request(app)
+        .delete("/jobs/0")
+      expect(response.body.status).toEqual(404)
+      expect(response.body.message).toEqual("Job with id: 0 not found")
     });
   });
 

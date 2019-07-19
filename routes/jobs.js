@@ -13,11 +13,24 @@ const jsonschema = require("jsonschema");
  * - creates a new job
  * - returns JSON of {job: jobData}
  */
+
+const createJobSchema = require("../schemas/jobs/createJobSchema.json");
+
 router.post("/", async function(req, res, next) {
+  const result = jsonschema.validate(req.body, createJobSchema);
+
+  // JSON validator errors
+  if (!result.valid) {
+    let listOfErrors = result.errors.map(error => error.stack);
+    let error = new ExpressError(listOfErrors, 400);
+    return next(error);
+  }
+
   try {
       let job = await Job.create(req.body)
       return res.json({job})
   } catch(err) {
+      // 500 (server error)
       return next(err)
   }
 });
@@ -49,11 +62,23 @@ router.get("/:id", async function(req, res, next) {
 /** PATCH/jobs/:id
  * - return JSON of {job: jobData}
  */
+const updateJobSchema = require("../schemas/jobs/updateJobSchema.json");
+
 router.patch("/:id", async function(req, res, next) {
+  const result = jsonschema.validate(req.body, updateJobSchema);
+
+  // JSON validator errors
+  if (!result.valid) {
+    let listOfErrors = result.errors.map(error => error.stack);
+    let error = new ExpressError(listOfErrors, 400);
+    return next(error);
+  }
+
   try {
       let job = await Job.update(req.body, req.params.id);
       return res.json({job})
   } catch(err) {
+      // 404 (trying to update job that does not exist)
       return next(err)
   }
 });

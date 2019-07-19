@@ -41,7 +41,7 @@ router.post("/", async function(req, res, next) {
         let company = await Company.create(req.body);
         return res.json({ company });
     } catch(err) {
-        // 404 (trying to access company that does not exist)
+        // 400 (trying to create duplicate company) and 500 (server error)
         return next(err);
     }
 });
@@ -80,6 +80,7 @@ router.patch("/:handle", async function(req, res, next) {
         let company = await Company.update(req.body, req.params.handle);
         return res.json({ company });
     } catch(err) {
+        // 404 (trying to update company that does not exist)
         return next(err);
     }
 });
