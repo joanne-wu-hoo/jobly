@@ -1,7 +1,7 @@
 const db = require("../db");
 const ExpressError = require("../helpers/expressError");
-const sqlForPartialUpdate = require("../helpers/partialUpdate");
-const sqlForJobQuery = require("../helpers/jobQuery");
+const sqlForPartialUpdate = require("../helpers/sqlQueries/partialUpdate");
+const sqlForJobQuery = require("../helpers/sqlQueries/jobQuery");
 
 // NOTE: jobData is of form { id, title, salary, equity, company_handle, date_posted }
 
@@ -24,7 +24,8 @@ class Job {
       return result.rows[0];
   }
 
-  /** given:
+  /** update job 
+   * given:
    * - items: an object with keys of data table columns and values of updated values 
    * - id: a job's id
    * return:
@@ -53,7 +54,8 @@ class Job {
     };
   }
 
-  /** given req.query (an object with  key/value pairs search term, min_salary, and min_equity)
+  /** query jobs 
+   * given req.query (an object with  key/value pairs search term, min_salary, and min_equity)
    * query database and return [jobData, jobData...] 
    * where jobData = { id, title, salary, equity, company_handle, date_posted }
    * 
@@ -67,7 +69,8 @@ class Job {
     return result.rows;
   }
 
-  /** given a job id, 
+  /** get a job
+   * - given a job id, 
    * - return { id, title, salary, equity, company_handle, date_posted }
    * - or throw a 404 error
    * NOTE: Used in GET/jobs
@@ -94,7 +97,8 @@ class Job {
     return job;
   }    
 
-  /** given a job id, delete job from database, and return deletion confirmation message
+  /** delete a job 
+   * given a job id, delete job from database, and return deletion confirmation message
    * NOTE: Used in DELETE/jobs/:id
    */
   static async delete(id) {

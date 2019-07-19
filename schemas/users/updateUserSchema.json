@@ -1,0 +1,84 @@
+{
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "title": "The Root Schema",
+    "additionalProperties": false,
+    "required": [
+      "username",
+      "password"
+    ],
+    "properties": {
+      "username": {
+        "$id": "#/properties/username",
+        "type": "string",
+        "title": "The Username Schema",
+        "default": "",
+        "examples": [
+          "gabe"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "password": {
+        "$id": "#/properties/password",
+        "type": "string",
+        "title": "The Password Schema",
+        "default": "",
+        "examples": [
+          "secretssssss"
+        ],
+        "minLength": 8,
+        "pattern": "^(.*)$"
+      },
+      "first_name": {
+        "$id": "#/properties/first_name",
+        "type": "string",
+        "title": "The First_name Schema",
+        "default": "",
+        "examples": [
+          "gabriel"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "last_name": {
+        "$id": "#/properties/last_name",
+        "type": "string",
+        "title": "The Last_name Schema",
+        "default": "",
+        "examples": [
+          "mickey"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "email": {
+        "$id": "#/properties/email",
+        "type": "string",
+        "title": "The Email Schema",
+        "default": "",
+        "examples": [
+          "email@gmail.com"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "photo_url": {
+        "$id": "#/properties/photo_url",
+        "type": "string",
+        "title": "The Photo_url Schema",
+        "default": "",
+        "examples": [
+          "http://something.com"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "is_admin": {
+        "$id": "#/properties/is_admin",
+        "type": "boolean",
+        "title": "The Is_admin Schema",
+        "default": false,
+        "examples": [
+          true
+        ]
+      }
+    }
+  }

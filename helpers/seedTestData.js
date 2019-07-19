@@ -2,11 +2,12 @@ const Company = require("../models/company");
 const Job = require("../models/job");
 const db = require("../db");
 
-g = {}
+//DOCSTRING
+let g = {}
 
 async function beforeEachSeedData() {
     await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
+
     g.c1 = await Company.create({
         handle: "test-company",
         name: "Test Company",
@@ -49,12 +50,11 @@ async function beforeEachSeedData() {
 
 async function afterEachTearDownData() {
     await db.query("DELETE FROM companies");
-    await db.query("DELETE FROM jobs");
 }
 
 
-function cleanDate(date) {
-    return JSON.parse(JSON.stringify(date))
+function cleanDate(dataContainingDate) {
+    return JSON.parse(JSON.stringify(dataContainingDate))
 } 
 
 module.exports = {

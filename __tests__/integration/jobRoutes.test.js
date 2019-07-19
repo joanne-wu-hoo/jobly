@@ -4,7 +4,6 @@ const request = require("supertest");
 const { g, beforeEachSeedData, afterEachTearDownData, cleanDate } = require("../../helpers/seedTestData")
 
 
-
 describe("Job routes tests", function() {
   beforeEach(async function() {
     await beforeEachSeedData();
@@ -31,7 +30,8 @@ describe("Job routes tests", function() {
             equity: .5,
             company_handle: "test-company",
             date_posted: cleanDate(g.j1.date_posted)
-          }, {
+          }, 
+          {
             id: g.j2.id,
             title: "test-job2",
             salary: 200,

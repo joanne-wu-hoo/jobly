@@ -1,7 +1,6 @@
 /** Job Routes */
 
 const express = require("express");
-// const Company = require("../models/Company");
 const Job = require("../models/Job");
 const router = new express.Router();
 const ExpressError = require("../helpers/expressError");

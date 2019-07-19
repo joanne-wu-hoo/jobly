@@ -1,7 +1,9 @@
 \c jobly
+-- \c jobly-test
 
 DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE companies (
     handle text PRIMARY KEY,
@@ -19,6 +21,17 @@ CREATE TABLE jobs (
     company_handle text NOT NULL REFERENCES companies ON DELETE CASCADE,
     date_posted date DEFAULT CURRENT_DATE NOT NULL
 );
+
+CREATE TABLE users (
+    username text PRIMARY KEY,
+    password text NOT NULL,
+    first_name text NOT NULL,
+    last_name text NOT NULL,
+    email text NOT NULL UNIQUE,
+    photo_url text NOT NULL,
+    is_admin boolean DEFAULT false NOT NULL 
+);
+
 
 INSERT INTO companies
     VALUES ('test', 'test', 112358, 'test', 'test.html'),

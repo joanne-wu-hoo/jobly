@@ -2,8 +2,6 @@ const Job = require("../../models/job");
 const db = require("../../db");
 const { g, beforeEachSeedData, afterEachTearDownData } = require("../../helpers/seedTestData")
 
-
-
 describe("Job model tests", function() {
   beforeEach(async function() {
     await beforeEachSeedData();
