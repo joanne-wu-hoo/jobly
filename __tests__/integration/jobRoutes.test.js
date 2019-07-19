@@ -7,13 +7,12 @@ const request = require("supertest");
 let c1;
 let j1;
 
-
 function cleanDate(date) {
   return JSON.parse(JSON.stringify(date))
 }
 
-describe("Job routes tests", () => {
-  beforeEach(async function () {
+describe("Job routes tests", function() {
+  beforeEach(async function() {
     await db.query("DELETE FROM companies");
     await db.query("DELETE FROM jobs");
 
@@ -33,7 +32,7 @@ describe("Job routes tests", () => {
     });
   });
 
-  afterEach(async function () {
+  afterEach(async function() {
     await db.query("DELETE FROM companies");
     await db.query("DELETE FROM jobs");
   });
@@ -41,8 +40,8 @@ describe("Job routes tests", () => {
   /** GET/jobs => {jobs: [jobData, ...]} 
    * where jobData looks like: { id, title, salary, equity, company_handle, date_posted }
    */
-  describe("GET /jobs", function () {
-    it("returns info for all jobs", async function () {
+  describe("GET /jobs", function() {
+    it("returns info for all jobs", async function() {
       let response = await request(app)
         .get("/jobs");
 
@@ -61,8 +60,8 @@ describe("Job routes tests", () => {
   });
 
   /** POST/jobs => {job: { id, title, salary, equity, company_handle, date_posted }} */
-  describe("POST /jobs", function () {
-    it("adds job", async function () {
+  describe("POST /jobs", function() {
+    it("adds job", async function() {
       let newJobInfo = {
         title: "test-add-job",
         salary: 100,
@@ -83,7 +82,7 @@ describe("Job routes tests", () => {
       });
     });
 
-    it("throws error if user provides malformed data", async function () {
+    it("throws error if user provides malformed data", async function() {
       let malformedJobInfo = {
           wrong: "test-add-job"
       }
@@ -96,7 +95,7 @@ describe("Job routes tests", () => {
     });
   });
 
-  afterAll(async function () {
+  afterAll(async function() {
     await db.end();
   });
 });

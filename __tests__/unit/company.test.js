@@ -4,7 +4,7 @@ const ExpressError = require("../../helpers/expressError");
 
 
 describe("Company model tests", function() {
-  beforeEach(async function () {
+  beforeEach(async function() {
     await db.query("DELETE FROM companies");
 
     let c1 = await Company.create({
@@ -32,14 +32,14 @@ describe("Company model tests", function() {
     })
   });
 
-  afterEach(async function () {
+  afterEach(async function() {
     await db.query("DELETE FROM companies");
   });
 
   describe("Company CRUD methods", function() {
     // Create tests
     describe("Create a company", function() {
-      it("should create a company", async function () {
+      it("should create a company", async function() {
         let company = {
           handle: "google",
           name: "Google",
@@ -56,7 +56,7 @@ describe("Company model tests", function() {
         });
       });
 
-      it("should throw an error if bad request", async function () {
+      it("should throw an error if bad request", async function() {
         expect(Company.create({})).rejects.toThrowError();
       });
     });
